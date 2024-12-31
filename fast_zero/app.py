@@ -15,7 +15,7 @@ def read_root():
 
 
 @app.get('/users', status_code=HTTPStatus.OK, response_model=UserList)
-def read_users():
+def all_users():
     return {'users': database}
 
 
@@ -51,3 +51,15 @@ def delete_user(user_id: int):
     del database[user_id - 1]
 
     return {'message': 'User deleted'}
+
+
+@app.get('/users/{user_id}', response_model=UserPublic)
+def read_user(user_id: int):
+    if user_id > len(database) or user_id < 1:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
+        )
+
+    user_with_db = database[user_id - 1]
+
+    return user_with_db
